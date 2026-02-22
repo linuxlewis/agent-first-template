@@ -23,6 +23,12 @@ jobs:
       - name: Lint (Biome + Architecture)
         run: pnpm lint
 
+      - name: Type check
+        run: pnpm tsc --noEmit
+
+      - name: Build
+        run: pnpm build
+
       - name: Test
         run: pnpm test
 

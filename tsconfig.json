@@ -11,14 +11,16 @@
 		"declaration": true,
 		"declarationMap": true,
 		"sourceMap": true,
-		"outDir": "dist",
+		"noEmit": true,
+		"jsx": "react-jsx",
+		"allowImportingTsExtensions": true,
+		"types": ["node"],
 		"baseUrl": ".",
 		"paths": {
 			"@domains/*": ["src/domains/*"],
 			"@providers/*": ["src/providers/*"]
 		}
 	},
-	"jsx": "react-jsx",
 	"include": ["src/**/*.ts", "src/**/*.tsx"],
 	"exclude": ["node_modules", "dist"]
 }

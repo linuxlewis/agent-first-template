@@ -6,7 +6,7 @@
 		"dev": "concurrently \"tsx --watch src/server.ts\" \"vite --config src/app/vite.config.ts\"",
 		"dev:server": "tsx --watch src/server.ts",
 		"dev:web": "vite --config src/app/vite.config.ts",
-		"build": "pnpm -r build",
+		"build": "tsc --noEmit && vite build --config src/app/vite.config.ts",
 		"test": "vitest run",
 		"test:watch": "vitest",
 		"lint": "biome check . && tsx lints/check-deps.ts",
@@ -19,6 +19,7 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.9.0",
+		"@types/node": "^25.3.0",
 		"@types/react": "^19.2.14",
 		"@types/react-dom": "^19.2.3",
 		"@vitejs/plugin-react": "^5.1.4",
