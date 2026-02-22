@@ -58,7 +58,12 @@ function walkTs(dir: string): string[] {
 			const full = join(dir, entry.name);
 			if (entry.isDirectory() && entry.name !== "node_modules" && entry.name !== "dist") {
 				results.push(...walkTs(full));
-			} else if (entry.isFile() && /\.tsx?$/.test(entry.name) && !entry.name.endsWith(".d.ts")) {
+			} else if (
+				entry.isFile() &&
+				/\.tsx?$/.test(entry.name) &&
+				!entry.name.endsWith(".d.ts") &&
+				!entry.name.endsWith(".d.tsx")
+			) {
 				results.push(full);
 			}
 		}
