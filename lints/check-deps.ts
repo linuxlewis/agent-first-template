@@ -94,9 +94,10 @@ function checkFile(filePath: string) {
 
 		const importPath = importMatch[1];
 
-		// Rule: No direct cross-cutting imports
+		// Rule: No direct cross-cutting imports (providers are exempt — they wrap these)
+		const isProvider = rel.includes(`providers${sep}`) || rel.includes("providers/");
 		for (const banned of BANNED_DIRECT_IMPORTS) {
-			if (importPath.startsWith(banned)) {
+			if (importPath.startsWith(banned) && !isProvider) {
 				violations.push({
 					file: rel,
 					line: i + 1,
@@ -124,15 +125,12 @@ function checkFile(filePath: string) {
 					line: i + 1,
 					rule: "no-backward-import",
 					message: `'${sourceLayer}' layer cannot import from '${targetLayer}' layer (backward dependency).`,
-					fix: `The dependency direction is: Types → Config → Repo → Service → Runtime → UI. Move shared logic to a lower layer, or pass it as a parameter from a higher layer.`,
+					fix: "The dependency direction is: Types → Config → Repo → Service → Runtime → UI. Move shared logic to a lower layer, or pass it as a parameter from a higher layer.",
 				});
 			}
 
 			// Rule: No cross-domain imports below service layer
-			if (
-				targetDomain !== sourceDomain &&
-				LAYER_INDEX[sourceLayer] < LAYER_INDEX.service
-			) {
+			if (targetDomain !== sourceDomain && LAYER_INDEX[sourceLayer] < LAYER_INDEX.service) {
 				violations.push({
 					file: rel,
 					line: i + 1,

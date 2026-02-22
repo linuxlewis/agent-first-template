@@ -7,8 +7,8 @@
  * Run via: pnpm check:docs
  */
 
-import { readFileSync, existsSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { existsSync, readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
 
 const STALE_DAYS = 14;
 const CATALOG_PATH = join(process.cwd(), "docs/catalog.md");
@@ -22,8 +22,7 @@ const content = readFileSync(CATALOG_PATH, "utf-8");
 const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
 const warnings: string[] = [];
 
-let match: RegExpExecArray | null;
-while ((match = linkRegex.exec(content)) !== null) {
+for (const match of content.matchAll(linkRegex)) {
 	const [, label, href] = match;
 	if (href.startsWith("http")) continue;
 

@@ -7,9 +7,9 @@
  * This layer orchestrates domain rules and coordinates repo calls.
  */
 
-import { CreateItemSchema, type Item } from "../types/index.js";
-import { itemRepo } from "../repo/item-repo.js";
 import { createLogger } from "@providers/telemetry/index.js";
+import { itemRepo } from "../repo/item-repo.js";
+import { CreateItemSchema, type Item } from "../types/index.js";
 
 const log = createLogger("example.item-service");
 
