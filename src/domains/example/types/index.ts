@@ -1,1 +1,1 @@
-export { ItemSchema, CreateItemSchema, type Item, type CreateItem } from "./item.js";
+export { ItemSchema, CreateItemSchema, ItemIdSchema, type Item, type CreateItem } from "./item.js";

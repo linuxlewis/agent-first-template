@@ -21,12 +21,13 @@ Types → Config → Repo → Service → Runtime → UI
 
 ### Cross-Cutting Concerns (Providers)
 
-Auth, telemetry, feature flags, and shared connectors (database, cache, queue) live in `src/providers/`. Any layer may import from providers — this is the **only** exception to the forward-only rule.
+Database, telemetry, auth, feature flags, and shared connectors (cache, queue) live in `src/providers/`. Any layer may import from providers — this is the **only** exception to the forward-only rule.
 
 ```
 src/providers/
+├── database/      # Postgres client and lifecycle
+├── telemetry/     # Structured Pino logging; metrics/traces are future work
 ├── auth/          # Authentication & authorization
-├── telemetry/     # Logging (Pino), tracing (OTel), metrics
 └── feature-flags/ # Feature flag evaluation
 ```
 
@@ -38,17 +39,21 @@ These rules are enforced by the custom linter at `lints/check-deps.ts`:
 2. **No cross-domain imports at lower layers.** `domainA/repo` cannot import `domainB/repo`. Cross-domain communication happens at the `service` layer or above.
 3. **No direct cross-cutting imports.** Use `src/providers/`, not raw `pino` or `@opentelemetry/*` imports in domain code.
 4. **UI only imports types and client-safe config.** No server-side code in the UI layer.
+5. **Co-located tests are required.** Source modules must have adjacent unit or integration tests unless they are approved entrypoints or barrel files.
+6. **Structured logging only.** Application code must not use `console.*`; use providers so harness logs stay queryable.
 
 ### Adding a New Domain
 
 1. Create `src/domains/<name>/` with all six layer directories
 2. Add types and Zod schemas first (types layer is the foundation)
 3. Register routes in the runtime layer
-4. Update [docs/catalog.md](./docs/catalog.md)
+4. Add co-located tests for every source module
+5. Add browser e2e coverage when the domain exposes user-visible flows
+6. Update [docs/catalog.md](./docs/catalog.md) or domain-specific docs when behavior changes
 
 ### File Conventions
 
 - One export per file preferred (agents navigate better)
-- Co-locate tests: `foo.ts` → `foo.test.ts`
+- Co-locate tests: `foo.ts` → `foo.test.ts`; database tests use `foo.integration.test.ts`
 - Max file size: 300 lines (enforced by linter)
 - Schemas named `<Thing>Schema`, types inferred as `type Thing = z.infer<typeof ThingSchema>`

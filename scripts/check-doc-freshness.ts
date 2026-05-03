@@ -21,6 +21,8 @@ if (!existsSync(CATALOG_PATH)) {
 const content = readFileSync(CATALOG_PATH, "utf-8");
 const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
 const warnings: string[] = [];
+const staleDaysMs = STALE_DAYS * 24 * 60 * 60 * 1000;
+const now = new Date();
 
 for (const match of content.matchAll(linkRegex)) {
 	const [, label, href] = match;
@@ -32,6 +34,28 @@ for (const match of content.matchAll(linkRegex)) {
 	}
 }
 
+if (content.includes("YYYY-MM-DD")) {
+	warnings.push("❌ Placeholder date found: replace YYYY-MM-DD with a real Last Verified date");
+}
+
+for (const line of content.split("\n")) {
+	const dateMatch = line.match(/\|\s*(\d{4}-\d{2}-\d{2})\s*\|$/);
+	if (!dateMatch) continue;
+
+	const date = new Date(`${dateMatch[1]}T00:00:00Z`);
+	if (Number.isNaN(date.valueOf())) {
+		warnings.push(`❌ Invalid Last Verified date: ${dateMatch[1]}`);
+		continue;
+	}
+	if (date > now) {
+		warnings.push(`❌ Future Last Verified date: ${dateMatch[1]}`);
+		continue;
+	}
+	if (now.getTime() - date.getTime() > staleDaysMs) {
+		warnings.push(`❌ Stale Last Verified date: ${dateMatch[1]} is older than ${STALE_DAYS} days`);
+	}
+}
+
 if (warnings.length > 0) {
 	console.error(`\n⚠️  ${warnings.length} doc issue(s) found:\n`);
 	for (const w of warnings) {
@@ -39,5 +63,5 @@ if (warnings.length > 0) {
 	}
 	process.exit(1);
 } else {
-	console.log("✅ All catalog links valid.");
+	console.log("✅ Catalog links and verification dates valid.");
 }

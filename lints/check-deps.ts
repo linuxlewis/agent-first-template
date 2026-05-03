@@ -11,8 +11,8 @@
  * 4. Max file size: 300 lines
  */
 
-import { readFileSync, readdirSync, statSync } from "node:fs";
-import { join, relative, sep } from "node:path";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { basename, dirname, extname, join, relative, sep } from "node:path";
 
 const LAYER_ORDER = ["types", "config", "repo", "service", "runtime", "ui"] as const;
 type Layer = (typeof LAYER_ORDER)[number];
@@ -25,6 +25,8 @@ const BANNED_DIRECT_IMPORTS = [
 	"pino", // Use @providers/telemetry
 	"@opentelemetry", // Use @providers/telemetry
 ];
+
+const ENTRYPOINT_FILES = new Set(["src/server.ts", "src/app/main.tsx", "src/app/vite.config.ts"]);
 
 interface Violation {
 	file: string;
@@ -92,8 +94,28 @@ function checkFile(filePath: string) {
 	const sourceLayer = getLayer(filePath);
 	const sourceDomain = getDomain(filePath);
 
+	if (isSourceModuleRequiringTest(rel) && !hasColocatedTest(filePath)) {
+		violations.push({
+			file: rel,
+			line: 1,
+			rule: "co-located-test-required",
+			message: "Source module does not have a co-located test.",
+			fix: "Add a focused foo.test.ts, foo.test.tsx, or foo.integration.test.ts next to this file. Tests are part of the agent feedback harness.",
+		});
+	}
+
 	for (let i = 0; i < lines.length; i++) {
 		const line = lines[i];
+		if (isAppSource(rel) && /\bconsole\.(log|info|warn|error|debug|trace)\b/.test(line)) {
+			violations.push({
+				file: rel,
+				line: i + 1,
+				rule: "no-console",
+				message: "Application code must not write directly to console.",
+				fix: "Use the structured logger from src/providers/telemetry so logs are queryable by the harness.",
+			});
+		}
+
 		const importMatch = line.match(/(?:import|from)\s+['"]([^'"]+)['"]/);
 		if (!importMatch) continue;
 
@@ -148,9 +170,59 @@ function checkFile(filePath: string) {
 	}
 }
 
+function isTestFile(rel: string) {
+	return /\.(test|integration\.test)\.tsx?$/.test(rel);
+}
+
+function isAppSource(rel: string) {
+	return rel.startsWith("src/") && !isTestFile(rel);
+}
+
+function isSourceModuleRequiringTest(rel: string) {
+	if (!isAppSource(rel)) return false;
+	if (ENTRYPOINT_FILES.has(rel)) return false;
+	if (basename(rel) === "index.ts") return false;
+	return /\.(ts|tsx)$/.test(rel);
+}
+
+function hasColocatedTest(filePath: string) {
+	const dir = dirname(filePath);
+	const ext = extname(filePath);
+	const stem = basename(filePath, ext);
+	const candidates = [
+		`${stem}.test.ts`,
+		`${stem}.test.tsx`,
+		`${stem}.integration.test.ts`,
+		`${stem}.integration.test.tsx`,
+	];
+	return candidates.some((candidate) => existsSync(join(dir, candidate)));
+}
+
+function checkDomainShape(srcDir: string) {
+	const domainsDir = join(srcDir, "domains");
+	if (!existsSync(domainsDir)) return;
+
+	for (const entry of readdirSync(domainsDir, { withFileTypes: true })) {
+		if (!entry.isDirectory()) continue;
+		for (const layer of LAYER_ORDER) {
+			const layerDir = join(domainsDir, entry.name, layer);
+			if (!existsSync(layerDir)) {
+				violations.push({
+					file: relative(process.cwd(), join(domainsDir, entry.name)),
+					line: 1,
+					rule: "required-domain-layer",
+					message: `Domain '${entry.name}' is missing required '${layer}' layer directory.`,
+					fix: `Create src/domains/${entry.name}/${layer}/ so agents can rely on the standard Types -> Config -> Repo -> Service -> Runtime -> UI shape.`,
+				});
+			}
+		}
+	}
+}
+
 // Run
 const srcDir = join(process.cwd(), "src");
 try {
+	checkDomainShape(srcDir);
 	const files = walkTs(srcDir);
 	for (const file of files) {
 		checkFile(file);

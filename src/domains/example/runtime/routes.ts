@@ -9,6 +9,7 @@
 
 import type { FastifyInstance } from "fastify";
 import { itemService } from "../service/item-service.js";
+import { ItemIdSchema } from "../types/index.js";
 
 export async function registerItemRoutes(app: FastifyInstance) {
 	app.get("/api/items", async () => {
@@ -16,7 +17,12 @@ export async function registerItemRoutes(app: FastifyInstance) {
 	});
 
 	app.get<{ Params: { id: string } }>("/api/items/:id", async (request, reply) => {
-		const item = await itemService.getItem(request.params.id);
+		const id = ItemIdSchema.safeParse(request.params.id);
+		if (!id.success) {
+			return reply.status(400).send({ error: "Invalid item id" });
+		}
+
+		const item = await itemService.getItem(id.data);
 		if (!item) {
 			return reply.status(404).send({ error: "Item not found" });
 		}
@@ -33,7 +39,12 @@ export async function registerItemRoutes(app: FastifyInstance) {
 	});
 
 	app.delete<{ Params: { id: string } }>("/api/items/:id", async (request, reply) => {
-		const deleted = await itemService.deleteItem(request.params.id);
+		const id = ItemIdSchema.safeParse(request.params.id);
+		if (!id.success) {
+			return reply.status(400).send({ error: "Invalid item id" });
+		}
+
+		const deleted = await itemService.deleteItem(id.data);
 		if (!deleted) {
 			return reply.status(404).send({ error: "Item not found" });
 		}

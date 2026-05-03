@@ -8,10 +8,12 @@ Based on principles from [Harness Engineering](https://openai.com/index/harness-
 
 ```bash
 pnpm install
-pnpm dev        # Start dev servers
+pnpm harness:boot # Start Docker Compose Postgres, API, and web for this worktree
 pnpm test       # Run tests
 pnpm lint       # Biome + architectural linting
 pnpm check:docs # Verify doc freshness
+pnpm harness:test # Boot Docker Compose Postgres, run migrations, seed, test, e2e, and tear down
+pnpm harness:down # Stop the local harness and Docker Compose resources
 ```
 
 ## Architecture
@@ -24,11 +26,11 @@ Each business domain follows a strict layered model:
 Types → Config → Repo → Service → Runtime → UI
 ```
 
-Dependencies flow forward only. Cross-cutting concerns (auth, logging, feature flags) go through `src/providers/`.
+Dependencies flow forward only. Cross-cutting concerns (database, logging, auth, feature flags) go through `src/providers/`.
 
 ## For Agents
 
-Start with [AGENTS.md](./AGENTS.md) — it's your map to the codebase.
+Start with [AGENTS.md](./AGENTS.md) — it's your map to the codebase. Use [docs/testing.md](./docs/testing.md) for the full harness and testing procedure.
 
 ## For Humans
 
