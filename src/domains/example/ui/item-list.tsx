@@ -8,55 +8,46 @@
  * UI components never import server-side code directly.
  */
 
-import { useCallback, useEffect, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import type { Item } from "../types/index.js";
 
+const itemsQueryKey = ["items"] as const;
+
 export function ItemList() {
-	const [items, setItems] = useState<Item[]>([]);
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState<string | null>(null);
 	const [newName, setNewName] = useState("");
+	const queryClient = useQueryClient();
 
-	const fetchItems = useCallback(async () => {
-		try {
-			const res = await fetch("/api/items");
-			if (!res.ok) throw new Error(`HTTP ${res.status}`);
-			setItems(await res.json());
-			setError(null);
-		} catch (e) {
-			setError(e instanceof Error ? e.message : "Failed to fetch items");
-		} finally {
-			setLoading(false);
-		}
-	}, []);
+	const itemsQuery = useQuery({
+		queryKey: itemsQueryKey,
+		queryFn: fetchItems,
+	});
 
-	async function createItem() {
-		if (!newName.trim()) return;
-		try {
-			const res = await fetch("/api/items", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ name: newName, status: "draft" }),
-			});
-			if (!res.ok) throw new Error(`HTTP ${res.status}`);
+	const createMutation = useMutation({
+		mutationFn: createItemRequest,
+		onSuccess: async () => {
 			setNewName("");
-			fetchItems();
-		} catch (e) {
-			setError(e instanceof Error ? e.message : "Failed to create item");
-		}
+			await queryClient.invalidateQueries({ queryKey: itemsQueryKey });
+		},
+	});
+
+	const deleteMutation = useMutation({
+		mutationFn: deleteItemRequest,
+		onSuccess: async () => {
+			await queryClient.invalidateQueries({ queryKey: itemsQueryKey });
+		},
+	});
+
+	const error = getErrorMessage(itemsQuery.error ?? createMutation.error ?? deleteMutation.error);
+
+	function createItem() {
+		if (!newName.trim()) return;
+		createMutation.mutate(newName);
 	}
 
-	async function deleteItem(id: string) {
-		await fetch(`/api/items/${id}`, { method: "DELETE" });
-		fetchItems();
-	}
+	if (itemsQuery.isLoading) return <p>Loading...</p>;
 
-	useEffect(() => {
-		fetchItems();
-	}, [fetchItems]);
-
-	if (loading) return <p>Loading...</p>;
-
+	const items = itemsQuery.data ?? [];
 	return (
 		<div>
 			<h2>Items</h2>
@@ -98,7 +89,7 @@ export function ItemList() {
 							</span>
 							<button
 								type="button"
-								onClick={() => deleteItem(item.id)}
+								onClick={() => deleteMutation.mutate(item.id)}
 								style={{ color: "red", cursor: "pointer" }}
 							>
 								Delete
@@ -109,4 +100,30 @@ export function ItemList() {
 			)}
 		</div>
 	);
+}
+
+async function fetchItems(): Promise<Item[]> {
+	const res = await fetch("/api/items");
+	if (!res.ok) throw new Error(`HTTP ${res.status}`);
+	return res.json();
+}
+
+async function createItemRequest(name: string) {
+	const res = await fetch("/api/items", {
+		method: "POST",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify({ name, status: "draft" }),
+	});
+	if (!res.ok) throw new Error(`HTTP ${res.status}`);
+	return res.json();
+}
+
+async function deleteItemRequest(id: string) {
+	const res = await fetch(`/api/items/${id}`, { method: "DELETE" });
+	if (!res.ok) throw new Error(`HTTP ${res.status}`);
+}
+
+function getErrorMessage(error: unknown) {
+	if (!error) return null;
+	return error instanceof Error ? error.message : "Request failed";
 }

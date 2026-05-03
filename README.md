@@ -20,7 +20,7 @@ pnpm harness:down # Stop the local harness and Docker Compose resources
 
 See [ARCHITECTURE.md](./ARCHITECTURE.md) for the full picture.
 
-Each business domain follows a strict layered model:
+Each business domain follows a strict layered model. The React UI uses TanStack Query for server-state fetching, mutation, caching, and invalidation.
 
 ```
 Types → Config → Repo → Service → Runtime → UI

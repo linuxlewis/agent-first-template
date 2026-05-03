@@ -45,6 +45,7 @@
 	},
 	"packageManager": "pnpm@9.15.0",
 	"dependencies": {
+		"@tanstack/react-query": "^5.100.9",
 		"fastify": "^5.7.4",
 		"pino": "^10.3.1",
 		"postgres": "^3.4.9",

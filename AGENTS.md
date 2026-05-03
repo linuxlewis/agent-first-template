@@ -19,7 +19,7 @@ This is a TypeScript monorepo using pnpm workspaces. The application follows a d
 
 ## Stack
 
-pnpm · TypeScript · Fastify + React/Vite · PostgreSQL + Drizzle · Zod · Vitest · Playwright · Biome · GitHub Actions · Pino · Docker Compose
+pnpm · TypeScript · Fastify + React/Vite · TanStack Query · PostgreSQL + Drizzle · Zod · Vitest · Playwright · Biome · GitHub Actions · Pino · Docker Compose
 
 ## Key Rules
 
