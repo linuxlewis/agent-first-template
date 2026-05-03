@@ -18,15 +18,6 @@ All documentation in this repository, indexed for discoverability.
 |----------|------|--------|---------------|
 | Harness engineering readiness | [docs/design/harness-engineering-readiness.md](./design/harness-engineering-readiness.md) | Current | 2026-05-03 |
 
-## Plans
-
-| Plan | Path | Status |
-|------|------|--------|
-| Harness engineering readiness | [plans/completed/harness-engineering-readiness.md](../plans/completed/harness-engineering-readiness.md) | Completed |
-| Technical debt | [plans/debt.md](../plans/debt.md) | Active |
-
----
-
 ### Freshness Rules
 
 - **Current** — Verified to match actual code behavior

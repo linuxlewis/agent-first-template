@@ -36,6 +36,5 @@ Start with [AGENTS.md](./AGENTS.md) — it's your map to the codebase. Use [docs
 
 Your job is to:
 1. Define intent (what should the system do?)
-2. Write plans (in `plans/active/`)
-3. Review agent output
-4. Encode taste into linters and docs
+2. Review agent output
+3. Encode taste into linters and docs

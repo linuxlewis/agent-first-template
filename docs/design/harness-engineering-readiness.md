@@ -10,7 +10,7 @@ The target state is not only "agents can edit code." The target is a repository 
 
 | Capability | Evidence | Assessment |
 |------------|----------|------------|
-| Small agent map | `AGENTS.md` points to architecture, docs, plans, quality, and debt | Good shape for progressive disclosure |
+| Small agent map | `AGENTS.md` points to architecture, testing, docs, and quality | Good shape for progressive disclosure |
 | Layered domain model | `ARCHITECTURE.md` defines Types -> Config -> Repo -> Service -> Runtime -> UI | Strong foundation |
 | Mechanical guardrails | `lints/check-deps.ts` runs through `pnpm lint` | Enforces layer shape, dependency direction, co-located tests, structured logging, and no app `console.*` |
 | Docker Compose database | `docker-compose.yml`, `src/providers/database/`, `migrations/`, `scripts/db-migrate.ts` | Postgres is the full-stack database layer |
@@ -18,14 +18,14 @@ The target state is not only "agents can edit code." The target is a repository 
 | Browser e2e | `playwright.config.ts`, `tests/e2e/item-flow.spec.ts` | Validates item create/reload/delete and API failure UI behavior |
 | Agent-queryable logs | `pnpm harness:logs` and `.harness/<worktree>/logs/` | API logs include request ID, method, URL, status, and duration |
 | CI artifacts | `.github/workflows/ci.yml` | Runs harness tests and uploads Playwright and harness artifacts |
-| Repository-local docs | `docs/catalog.md`, `docs/testing.md`, `docs/quality.md`, and `plans/debt.md` | Testing procedures and quality state are versioned in repo |
+| Repository-local docs | `docs/catalog.md`, `docs/testing.md`, and `docs/quality.md` | Testing procedures and quality state are versioned in repo |
 
 ## Remaining Gaps
 
 | Gap | Evidence | Why It Matters For Agents |
 |-----|----------|---------------------------|
-| No metrics/traces backend | `docs/quality.md` and `plans/debt.md` track this as remaining debt | Logs and Playwright traces cover many failures, but performance analysis would benefit from metrics and service traces |
-| No production deployment config | `plans/debt.md` keeps deploy work active | The harness validates local full-stack behavior, not production release mechanics |
+| No metrics/traces backend | `docs/quality.md` tracks this as a known gap | Logs and Playwright traces cover many failures, but performance analysis would benefit from metrics and service traces |
+| No production deployment config | `docs/quality.md` tracks this as a known gap | The harness validates local full-stack behavior, not production release mechanics |
 
 ## Implemented Backlog
 
@@ -86,7 +86,7 @@ Recurring cleanup has an initial repo-local command:
 
 - `pnpm quality:audit` reports layer source and test counts from code evidence.
 - `pnpm check:docs` checks stale docs and broken catalog links.
-- Keep small active plans for cleanup tasks instead of relying on memory.
+- Keep durable cleanup guidance in `docs/quality.md` and focused design docs instead of relying on memory.
 
 ## Success Criteria
 
