@@ -10,11 +10,16 @@ import { z } from "zod";
 export const ItemSchema = z.object({
 	id: z.string().uuid(),
 	name: z.string().min(1).max(255),
-	description: z.string().max(2000).optional(),
+	description: z.preprocess(
+		(value) => (value === null ? undefined : value),
+		z.string().max(2000).optional(),
+	),
 	status: z.enum(["draft", "active", "archived"]),
 	createdAt: z.coerce.date(),
 	updatedAt: z.coerce.date(),
 });
+
+export const ItemIdSchema = z.string().uuid();
 
 export type Item = z.infer<typeof ItemSchema>;
 

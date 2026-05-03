@@ -14,23 +14,22 @@ Track the health of each domain and architectural layer. Update this when you im
 
 | Domain | Types | Config | Repo | Service | Runtime | UI | Overall | Notes |
 |--------|-------|--------|------|---------|---------|----|---------|----|
-| example | B | B | C | C | C | D | C | Scaffold only, needs real implementation |
+| example | B | B | B | B | B | B | B | Docker Compose-backed full-stack example with unit, integration, and e2e coverage |
 
 ## Cross-Cutting
 
 | Provider | Grade | Notes |
 |----------|-------|-------|
 | auth | D | Placeholder |
-| telemetry | B | Pino + OTel wired up |
+| database | B | Postgres provider wired through Docker Compose harness |
+| telemetry | B | Pino logger, request IDs, route timings, and per-harness queryable logs are wired; metrics/traces are future work |
 | feature-flags | D | Placeholder |
 
 ## Known Gaps
 
-- [ ] No integration tests yet
-- [ ] Database migrations not wired up
-- [ ] CI pipeline incomplete
+- [ ] Telemetry does not yet include a metrics/traces backend beyond structured logs and Playwright traces
 - [ ] No production deployment config
 
 ---
 
-*Last updated: YYYY-MM-DD*
+*Last updated: 2026-05-03*

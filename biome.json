@@ -11,6 +11,13 @@
 		"lineWidth": 100
 	},
 	"files": {
-		"ignore": ["node_modules", "dist", "*.generated.*"]
+		"ignore": [
+			"node_modules",
+			"dist",
+			".harness",
+			"test-results",
+			"playwright-report",
+			"*.generated.*"
+		]
 	}
 }

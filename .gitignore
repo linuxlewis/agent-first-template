@@ -1,5 +1,8 @@
 node_modules/
 dist/
+.harness/
+playwright-report/
+test-results/
 .env
 .env.local
 *.generated.*

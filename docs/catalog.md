@@ -6,29 +6,22 @@ All documentation in this repository, indexed for discoverability.
 
 | Document | Path | Status | Last Verified |
 |----------|------|--------|---------------|
-| Agent instructions | [AGENTS.md](../AGENTS.md) | ✅ Current | YYYY-MM-DD |
-| Architecture overview | [ARCHITECTURE.md](../ARCHITECTURE.md) | ✅ Current | YYYY-MM-DD |
-| Core beliefs | [docs/beliefs.md](./beliefs.md) | ✅ Current | YYYY-MM-DD |
-| Quality tracking | [docs/quality.md](./quality.md) | ✅ Current | YYYY-MM-DD |
+| Agent instructions | [AGENTS.md](../AGENTS.md) | Current | 2026-05-03 |
+| Architecture overview | [ARCHITECTURE.md](../ARCHITECTURE.md) | Current | 2026-05-03 |
+| Core beliefs | [docs/beliefs.md](./beliefs.md) | Current | 2026-05-03 |
+| Quality tracking | [docs/quality.md](./quality.md) | Current | 2026-05-03 |
+| Testing and harness procedures | [docs/testing.md](./testing.md) | Current | 2026-05-03 |
 
 ## Design Documents
 
 | Document | Path | Status | Last Verified |
 |----------|------|--------|---------------|
-| *(none yet)* | | | |
-
-## Plans
-
-| Plan | Path | Status |
-|------|------|--------|
-| Technical debt | [plans/debt.md](../plans/debt.md) | Active |
-
----
+| Harness engineering readiness | [docs/design/harness-engineering-readiness.md](./design/harness-engineering-readiness.md) | Current | 2026-05-03 |
 
 ### Freshness Rules
 
-- **✅ Current** — Verified to match actual code behavior
-- **⚠️ Stale** — May not reflect current implementation
-- **❌ Obsolete** — Scheduled for removal or rewrite
+- **Current** — Verified to match actual code behavior
+- **Stale** — May not reflect current implementation
+- **Obsolete** — Scheduled for removal or rewrite
 
-Documents should be re-verified at least every 2 weeks. The doc-gardening CI job flags stale entries.
+Documents should be re-verified at least every 2 weeks. The current CI check validates catalog links and `Last Verified` dates.
