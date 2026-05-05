@@ -1,8 +1,8 @@
-import { isProcessAlive, readMetadata, waitForHttp } from "./shared.js";
+import { isProcessAlive, readMetadata, waitForHttp } from "./stack-shared.js";
 
 const metadata = readMetadata();
 if (!metadata) {
-	console.error("harness metadata not found; run pnpm harness:boot");
+	console.error("stack metadata not found; run pnpm start");
 	process.exit(1);
 }
 

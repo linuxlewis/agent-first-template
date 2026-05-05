@@ -1,67 +1,72 @@
 /**
- * Doc Freshness Checker
+ * Documentation checker
  *
- * Scans docs/catalog.md for entries and checks if they still exist
- * and if their "Last Verified" date is within the staleness threshold.
- *
+ * Validates local Markdown links in the repository docs.
  * Run via: pnpm check:docs
  */
 
-import { existsSync, readFileSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { dirname, extname, join, normalize, relative } from "node:path";
 
-const STALE_DAYS = 14;
-const CATALOG_PATH = join(process.cwd(), "docs/catalog.md");
-
-if (!existsSync(CATALOG_PATH)) {
-	console.log("⚠️  No docs/catalog.md found. Skipping freshness check.");
-	process.exit(0);
-}
-
-const content = readFileSync(CATALOG_PATH, "utf-8");
-const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+const DOC_ROOTS = ["AGENTS.md", "README.md", "docs"];
+const markdownFiles = DOC_ROOTS.flatMap((entry) => collectMarkdown(join(process.cwd(), entry)));
 const warnings: string[] = [];
-const staleDaysMs = STALE_DAYS * 24 * 60 * 60 * 1000;
-const now = new Date();
 
-for (const match of content.matchAll(linkRegex)) {
-	const [, label, href] = match;
-	if (href.startsWith("http")) continue;
+for (const file of markdownFiles) {
+	const content = readFileSync(file, "utf-8");
+	const linkRegex = /\[[^\]]+\]\(([^)]+)\)/g;
 
-	const resolved = join(dirname(CATALOG_PATH), href);
-	if (!existsSync(resolved)) {
-		warnings.push(`❌ Broken link: "${label}" → ${href} (file not found)`);
-	}
-}
+	for (const match of content.matchAll(linkRegex)) {
+		const href = match[1];
+		if (shouldSkip(href)) continue;
 
-if (content.includes("YYYY-MM-DD")) {
-	warnings.push("❌ Placeholder date found: replace YYYY-MM-DD with a real Last Verified date");
-}
+		const [pathPart] = href.split("#");
+		if (!pathPart) continue;
 
-for (const line of content.split("\n")) {
-	const dateMatch = line.match(/\|\s*(\d{4}-\d{2}-\d{2})\s*\|$/);
-	if (!dateMatch) continue;
-
-	const date = new Date(`${dateMatch[1]}T00:00:00Z`);
-	if (Number.isNaN(date.valueOf())) {
-		warnings.push(`❌ Invalid Last Verified date: ${dateMatch[1]}`);
-		continue;
-	}
-	if (date > now) {
-		warnings.push(`❌ Future Last Verified date: ${dateMatch[1]}`);
-		continue;
-	}
-	if (now.getTime() - date.getTime() > staleDaysMs) {
-		warnings.push(`❌ Stale Last Verified date: ${dateMatch[1]} is older than ${STALE_DAYS} days`);
+		const resolved = normalize(join(dirname(file), pathPart));
+		if (!existsSync(resolved)) {
+			warnings.push(`${relative(process.cwd(), file)} links to missing file: ${href}`);
+		}
 	}
 }
 
 if (warnings.length > 0) {
-	console.error(`\n⚠️  ${warnings.length} doc issue(s) found:\n`);
-	for (const w of warnings) {
-		console.error(`  ${w}`);
+	console.error(`\n${warnings.length} doc issue(s) found:\n`);
+	for (const warning of warnings) {
+		console.error(`  - ${warning}`);
 	}
 	process.exit(1);
-} else {
-	console.log("✅ Catalog links and verification dates valid.");
+}
+
+console.log(`Checked ${markdownFiles.length} Markdown files. Local links are valid.`);
+
+function collectMarkdown(path: string): string[] {
+	if (!existsSync(path)) return [];
+	const statEntries = readdirSafe(path);
+	if (!statEntries) {
+		return extname(path) === ".md" ? [path] : [];
+	}
+
+	return statEntries.flatMap((entry) => {
+		const child = join(path, entry.name);
+		if (entry.isDirectory()) return collectMarkdown(child);
+		return entry.isFile() && extname(entry.name) === ".md" ? [child] : [];
+	});
+}
+
+function readdirSafe(path: string) {
+	try {
+		return readdirSync(path, { withFileTypes: true });
+	} catch {
+		return null;
+	}
+}
+
+function shouldSkip(href: string) {
+	return (
+		href.startsWith("http://") ||
+		href.startsWith("https://") ||
+		href.startsWith("mailto:") ||
+		href.startsWith("#")
+	);
 }

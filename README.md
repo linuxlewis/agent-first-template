@@ -2,23 +2,27 @@
 
 A repository template optimized for AI agent-driven development. Humans steer, agents execute.
 
-Based on principles from [Harness Engineering](https://openai.com/index/harness-engineering/).
-
 ## Quick Start
+
+Prerequisites: Node 22, pnpm 9, Docker, and Docker Compose.
 
 ```bash
 pnpm install
-pnpm harness:boot # Start Docker Compose Postgres, API, and web for this worktree
-pnpm test       # Run tests
+pnpm start      # Start Docker Compose Postgres, API, and web for this worktree
+pnpm health     # Print health checks and the allocated URLs
+pnpm preview    # Build and run a pseudo-production stack
+pnpm test:unit  # Fast unit tests
+pnpm test       # Unit, integration, and e2e tests
 pnpm lint       # Biome + architectural linting
 pnpm check:docs # Verify doc freshness
-pnpm harness:test # Boot Docker Compose Postgres, run migrations, seed, test, e2e, and tear down
-pnpm harness:down # Stop the local harness and Docker Compose resources
+pnpm stop       # Stop the local stack and Docker Compose resources
 ```
+
+Use `pnpm logs -- --service api --lines 120` to inspect API logs. Use `pnpm seed` to reset the example data while the stack is running.
 
 ## Architecture
 
-See [ARCHITECTURE.md](./ARCHITECTURE.md) for the full picture.
+See [docs/architecture.md](./docs/architecture.md) for the full picture.
 
 Each business domain follows a strict layered model. The React UI uses TanStack Query for server-state fetching, mutation, caching, and invalidation.
 
@@ -28,9 +32,27 @@ Types → Config → Repo → Service → Runtime → UI
 
 Dependencies flow forward only. Cross-cutting concerns (database, logging, auth, feature flags) go through `src/providers/`.
 
+## Parallel Development
+
+Use `pnpm start`, `pnpm preview`, and `pnpm test` instead of hard-coded local ports. Stack commands allocate API, web, and Postgres ports dynamically from the current worktree path, then write the chosen URLs to `.stack/<worktree>/metadata.json`.
+
+This lets multiple agents work in separate git worktrees on the same machine without fighting over ports.
+
+When an agent needs the running app URL, use `pnpm health` or read `.stack/<worktree>/metadata.json`. Do not assume ports 3000, 4000, or 5432 are available.
+
+## Starting A New Project From This Template
+
+1. Create a new repository from this template.
+2. Rename the package in [package.json](./package.json).
+3. Update this README with the product name and local setup notes.
+4. Replace or rename the example domain under `src/domains/example/`.
+5. Add your first real domain by starting at the `types/` layer, then move forward through config, repo, service, runtime, and UI as needed.
+6. Keep [AGENTS.md](./AGENTS.md), [docs/implementation.md](./docs/implementation.md), [docs/testing.md](./docs/testing.md), and [docs/react.md](./docs/react.md) current as the project develops.
+7. Run `pnpm lint`, `pnpm test`, `pnpm build`, and `pnpm check:docs` before treating the template migration as complete.
+
 ## For Agents
 
-Start with [AGENTS.md](./AGENTS.md) — it's your map to the codebase. Use [docs/testing.md](./docs/testing.md) for the full harness and testing procedure.
+Start with [AGENTS.md](./AGENTS.md) and [docs/implementation.md](./docs/implementation.md). Use [docs/testing.md](./docs/testing.md) for the testing procedure.
 
 ## For Humans
 

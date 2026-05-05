@@ -1,7 +1,7 @@
-import { getHarnessPaths, killProcess, readMetadata, runCommand } from "./shared.js";
+import { getStackPaths, killProcess, readMetadata, runCommand } from "./stack-shared.js";
 
 const metadata = readMetadata();
-const paths = getHarnessPaths();
+const paths = getStackPaths();
 
 if (metadata) {
 	killProcess(metadata.pids.web);
@@ -11,4 +11,4 @@ if (metadata) {
 	runCommand("docker", ["compose", "-p", paths.projectName, "down", "-v", "--remove-orphans"]);
 }
 
-console.log(`harness stopped; artifacts kept in ${paths.dir}`);
+console.log(`stack stopped; artifacts kept in ${paths.dir}`);

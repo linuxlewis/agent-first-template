@@ -21,8 +21,8 @@ Track the health of each domain and architectural layer. Update this when you im
 | Provider | Grade | Notes |
 |----------|-------|-------|
 | auth | D | Placeholder |
-| database | B | Postgres provider wired through Docker Compose harness |
-| telemetry | B | Pino logger, request IDs, route timings, and per-harness queryable logs are wired; metrics/traces are future work |
+| database | B | Postgres provider wired through Docker Compose stack |
+| telemetry | B | Pino logger, request IDs, route timings, and stack log files are wired; metrics/traces are future work |
 | feature-flags | D | Placeholder |
 
 ## Known Gaps
@@ -32,4 +32,4 @@ Track the health of each domain and architectural layer. Update this when you im
 
 ---
 
-*Last updated: 2026-05-03*
+*Last updated: 2026-05-05*

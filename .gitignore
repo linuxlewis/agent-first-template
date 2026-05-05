@@ -1,6 +1,7 @@
 node_modules/
 dist/
-.harness/
+.stack/
+plans/
 playwright-report/
 test-results/
 .env

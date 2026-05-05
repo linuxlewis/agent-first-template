@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-const apiOrigin = process.env.API_ORIGIN ?? "http://127.0.0.1:4000";
+const apiOrigin = requiredEnv("API_ORIGIN");
 
 test.beforeEach(async ({ request }) => {
 	const response = await request.get(`${apiOrigin}/api/items`);
@@ -33,3 +33,11 @@ test("shows an error when the item API fails", async ({ page }) => {
 	await page.goto("/");
 	await expect(page.getByText("HTTP 503")).toBeVisible();
 });
+
+function requiredEnv(name: string) {
+	const value = process.env[name];
+	if (!value) {
+		throw new Error(`${name} is required. Run e2e through pnpm test:e2e or pnpm test.`);
+	}
+	return value;
+}
