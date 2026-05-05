@@ -14,7 +14,7 @@
 		"ignore": [
 			"node_modules",
 			"dist",
-			".harness",
+			".stack",
 			"test-results",
 			"playwright-report",
 			"*.generated.*"

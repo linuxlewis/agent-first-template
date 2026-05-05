@@ -1,14 +1,15 @@
 /**
  * Custom Architectural Linter
  *
- * Enforces the layered dependency rules defined in ARCHITECTURE.md.
+ * Enforces the layered dependency rules defined in docs/architecture.md.
  * Run via: pnpm lint (or directly: tsx lints/check-deps.ts)
  *
  * Rules enforced:
  * 1. No backward imports within a domain (Types → Config → Repo → Service → Runtime → UI)
  * 2. No cross-domain imports below the service layer
  * 3. No direct cross-cutting imports (must go through providers)
- * 4. Max file size: 300 lines
+ * 4. No useEffect in application source
+ * 5. Max file size: 300 lines
  */
 
 import { existsSync, readFileSync, readdirSync } from "node:fs";
@@ -100,7 +101,7 @@ function checkFile(filePath: string) {
 			line: 1,
 			rule: "co-located-test-required",
 			message: "Source module does not have a co-located test.",
-			fix: "Add a focused foo.test.ts, foo.test.tsx, or foo.integration.test.ts next to this file. Tests are part of the agent feedback harness.",
+			fix: "Add a focused foo.test.ts, foo.test.tsx, or foo.integration.test.ts next to this file. Tests are part of the agent feedback loop.",
 		});
 	}
 
@@ -112,7 +113,17 @@ function checkFile(filePath: string) {
 				line: i + 1,
 				rule: "no-console",
 				message: "Application code must not write directly to console.",
-				fix: "Use the structured logger from src/providers/telemetry so logs are queryable by the harness.",
+				fix: "Use the structured logger from src/providers/telemetry so stack logs are queryable.",
+			});
+		}
+
+		if (isAppSource(rel) && /\buseEffect\b/.test(line)) {
+			violations.push({
+				file: rel,
+				line: i + 1,
+				rule: "no-use-effect",
+				message: "React useEffect is not allowed in application source.",
+				fix: "Use event handlers, TanStack Query, derived render state, or explicit state transitions instead. See docs/react.md.",
 			});
 		}
 

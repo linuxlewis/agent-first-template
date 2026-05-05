@@ -21,6 +21,16 @@
 			"@providers/*": ["src/providers/*"]
 		}
 	},
-	"include": ["src/**/*.ts", "src/**/*.tsx", "drizzle.config.ts"],
+	"include": [
+		"src/**/*.ts",
+		"src/**/*.tsx",
+		"tests/**/*.ts",
+		"tests/**/*.tsx",
+		"scripts/**/*.ts",
+		"lints/**/*.ts",
+		"drizzle.config.ts",
+		"playwright.config.ts",
+		"vitest.config.ts"
+	],
 	"exclude": ["node_modules", "dist"]
 }

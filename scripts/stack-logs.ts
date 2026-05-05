@@ -1,9 +1,9 @@
 import { existsSync, readFileSync } from "node:fs";
-import { readMetadata } from "./shared.js";
+import { readMetadata } from "./stack-shared.js";
 
 const metadata = readMetadata();
 if (!metadata) {
-	console.error("harness metadata not found; run pnpm harness:boot");
+	console.error("stack metadata not found; run pnpm start");
 	process.exit(1);
 }
 

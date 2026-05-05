@@ -5,7 +5,8 @@ import { open } from "node:fs/promises";
 import { createServer } from "node:net";
 import { basename, join } from "node:path";
 
-export interface HarnessMetadata {
+export interface StackMetadata {
+	mode?: "dev" | "preview";
 	worktreeName: string;
 	projectName: string;
 	root: string;
@@ -35,10 +36,10 @@ export function getRoot() {
 	return execFileSync("git", ["rev-parse", "--show-toplevel"], { encoding: "utf-8" }).trim();
 }
 
-export function getHarnessPaths(root = getRoot()) {
+export function getStackPaths(root = getRoot()) {
 	const worktreeName = basename(root);
 	const hash = createHash("sha256").update(root).digest("hex").slice(0, 8);
-	const dir = join(root, ".harness", `${worktreeName}-${hash}`);
+	const dir = join(root, ".stack", `${worktreeName}-${hash}`);
 	return {
 		root,
 		worktreeName,
@@ -50,13 +51,13 @@ export function getHarnessPaths(root = getRoot()) {
 	};
 }
 
-export function readMetadata(): HarnessMetadata | null {
-	const { metadataPath } = getHarnessPaths();
+export function readMetadata(): StackMetadata | null {
+	const { metadataPath } = getStackPaths();
 	if (!existsSync(metadataPath)) return null;
-	return JSON.parse(readFileSync(metadataPath, "utf-8")) as HarnessMetadata;
+	return JSON.parse(readFileSync(metadataPath, "utf-8")) as StackMetadata;
 }
 
-export function writeMetadata(metadata: HarnessMetadata) {
+export function writeMetadata(metadata: StackMetadata) {
 	mkdirSync(metadata.dir, { recursive: true });
 	mkdirSync(join(metadata.dir, "logs"), { recursive: true });
 	writeFileSync(join(metadata.dir, "metadata.json"), `${JSON.stringify(metadata, null, 2)}\n`);
@@ -81,11 +82,11 @@ async function isPortFree(port: number) {
 }
 
 export function computePortSeeds(hash: string) {
-	const offset = Number.parseInt(hash.slice(0, 4), 16) % 500;
+	const offset = Number.parseInt(hash.slice(0, 4), 16) % 1000;
 	return {
 		web: 3000 + offset,
 		api: 4000 + offset,
-		postgres: 5400 + offset,
+		postgres: 5500 + offset,
 	};
 }
 

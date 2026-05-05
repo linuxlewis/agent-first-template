@@ -8,7 +8,7 @@ export default defineConfig({
 		: [["list"], ["html", { open: "never" }]],
 	retries: process.env.CI ? 1 : 0,
 	use: {
-		baseURL: process.env.WEB_URL ?? "http://127.0.0.1:3000",
+		baseURL: requiredEnv("WEB_URL"),
 		trace: "retain-on-failure",
 		screenshot: "only-on-failure",
 		video: "retain-on-failure",
@@ -20,3 +20,11 @@ export default defineConfig({
 		},
 	],
 });
+
+function requiredEnv(name: string) {
+	const value = process.env[name];
+	if (!value) {
+		throw new Error(`${name} is required. Run e2e through pnpm test:e2e or pnpm test.`);
+	}
+	return value;
+}

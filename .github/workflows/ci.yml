@@ -35,8 +35,8 @@ jobs:
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps chromium
 
-      - name: Harness test
-        run: pnpm harness:test
+      - name: Test
+        run: pnpm test
 
       - name: Upload Playwright report
         if: always()
@@ -46,5 +46,5 @@ jobs:
           path: |
             playwright-report/
             test-results/
-            .harness/
+            .stack/
           if-no-files-found: ignore

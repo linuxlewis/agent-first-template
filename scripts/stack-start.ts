@@ -2,30 +2,34 @@ import { mkdirSync } from "node:fs";
 import { join } from "node:path";
 import postgres from "postgres";
 import {
-	type HarnessMetadata,
+	type StackMetadata,
 	computePortSeeds,
 	findFreePort,
-	getHarnessPaths,
+	getStackPaths,
 	isProcessAlive,
 	readMetadata,
 	runCommand,
 	spawnLogged,
 	waitForHttp,
 	writeMetadata,
-} from "./shared.js";
+} from "./stack-shared.js";
 
 const existing = readMetadata();
 if (existing && isProcessAlive(existing.pids.api) && isProcessAlive(existing.pids.web)) {
+	if (existing.mode && existing.mode !== "dev") {
+		console.error(`stack is already running in ${existing.mode} mode; run pnpm stop first`);
+		process.exit(1);
+	}
 	await waitForHttp(`${existing.urls.api}/healthz`, 10_000);
 	await waitForHttp(existing.urls.web, 10_000);
-	console.log("harness already running");
+	console.log("stack already running");
 	console.log(`api: ${existing.urls.api}`);
 	console.log(`web: ${existing.urls.web}`);
 	console.log(`metadata: ${join(existing.dir, "metadata.json")}`);
 	process.exit(0);
 }
 
-const paths = getHarnessPaths();
+const paths = getStackPaths();
 const seeds = computePortSeeds(paths.hash);
 const ports = {
 	api: await findFreePort(seeds.api),
@@ -37,7 +41,7 @@ mkdirSync(paths.logDir, { recursive: true });
 
 const databaseUrl = `postgres://app:localdev@127.0.0.1:${ports.postgres}/app`;
 
-console.log(`starting docker compose database for ${paths.projectName}`);
+console.log(`starting stack database for ${paths.projectName}`);
 runCommand("docker", ["compose", "-p", paths.projectName, "up", "-d", "db"], {
 	POSTGRES_PORT: String(ports.postgres),
 });
@@ -48,7 +52,8 @@ await waitForPostgres(databaseUrl);
 console.log("running migrations");
 runCommand("pnpm", ["db:migrate"], { DATABASE_URL: databaseUrl });
 
-const metadata: HarnessMetadata = {
+const metadata: StackMetadata = {
+	mode: "dev",
 	worktreeName: paths.worktreeName,
 	projectName: paths.projectName,
 	root: paths.root,

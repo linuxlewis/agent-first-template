@@ -1,4 +1,4 @@
-# ARCHITECTURE.md
+# Architecture
 
 ## Domain-Driven Layered Architecture
 
@@ -40,7 +40,7 @@ These rules are enforced by the custom linter at `lints/check-deps.ts`:
 3. **No direct cross-cutting imports.** Use `src/providers/`, not raw `pino` or `@opentelemetry/*` imports in domain code.
 4. **UI only imports types and client-safe config.** No server-side code in the UI layer.
 5. **Co-located tests are required.** Source modules must have adjacent unit or integration tests unless they are approved entrypoints or barrel files.
-6. **Structured logging only.** Application code must not use `console.*`; use providers so harness logs stay queryable.
+6. **Structured logging only.** Application code must not use `console.*`; use providers so stack logs stay queryable.
 
 ### Adding a New Domain
 
@@ -49,7 +49,7 @@ These rules are enforced by the custom linter at `lints/check-deps.ts`:
 3. Register routes in the runtime layer
 4. Add co-located tests for every source module
 5. Add browser e2e coverage when the domain exposes user-visible flows
-6. Update [docs/catalog.md](./docs/catalog.md) or domain-specific docs when behavior changes
+6. Update [implementation.md](./implementation.md), [testing.md](./testing.md), or domain-specific docs when behavior changes
 
 ### File Conventions
 

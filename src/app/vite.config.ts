@@ -13,14 +13,21 @@ export default defineConfig({
 	},
 	server: {
 		port: 3000,
-		proxy: {
-			"/api": {
-				target: process.env.API_ORIGIN ?? "http://localhost:4000",
-				changeOrigin: true,
-			},
-		},
+		proxy: apiProxy(),
+	},
+	preview: {
+		proxy: apiProxy(),
 	},
 	build: {
 		outDir: resolve(__dirname, "../../dist/app"),
 	},
 });
+
+function apiProxy() {
+	return {
+		"/api": {
+			target: process.env.API_ORIGIN ?? "http://localhost:4000",
+			changeOrigin: true,
+		},
+	};
+}
