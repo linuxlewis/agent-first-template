@@ -5,7 +5,7 @@
  * Run via: pnpm check:docs
  */
 
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, extname, join, normalize, relative } from "node:path";
 
 const DOC_ROOTS = ["AGENTS.md", "README.md", "docs"];

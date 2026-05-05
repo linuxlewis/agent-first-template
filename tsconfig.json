@@ -15,10 +15,9 @@
 		"jsx": "react-jsx",
 		"allowImportingTsExtensions": true,
 		"types": ["node"],
-		"baseUrl": ".",
 		"paths": {
-			"@domains/*": ["src/domains/*"],
-			"@providers/*": ["src/providers/*"]
+			"@domains/*": ["./src/domains/*"],
+			"@providers/*": ["./src/providers/*"]
 		}
 	},
 	"include": [

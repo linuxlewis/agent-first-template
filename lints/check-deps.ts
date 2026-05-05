@@ -12,7 +12,7 @@
  * 5. Max file size: 300 lines
  */
 
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { basename, dirname, extname, join, relative, sep } from "node:path";
 
 const LAYER_ORDER = ["types", "config", "repo", "service", "runtime", "ui"] as const;

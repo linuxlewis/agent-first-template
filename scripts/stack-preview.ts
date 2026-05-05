@@ -2,13 +2,13 @@ import { mkdirSync } from "node:fs";
 import { join } from "node:path";
 import postgres from "postgres";
 import {
-	type StackMetadata,
 	computePortSeeds,
 	findFreePort,
 	getStackPaths,
 	isProcessAlive,
 	readMetadata,
 	runCommand,
+	type StackMetadata,
 	spawnLogged,
 	waitForHttp,
 	writeMetadata,

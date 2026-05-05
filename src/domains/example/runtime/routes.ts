@@ -33,7 +33,7 @@ export async function registerItemRoutes(app: FastifyInstance) {
 		try {
 			const item = await itemService.createItem(request.body);
 			return reply.status(201).send(item);
-		} catch (err) {
+		} catch {
 			return reply.status(400).send({ error: "Invalid item data" });
 		}
 	});
