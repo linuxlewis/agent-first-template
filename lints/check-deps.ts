@@ -191,9 +191,14 @@ function isAppSource(rel: string) {
 
 function isSourceModuleRequiringTest(rel: string) {
 	if (!isAppSource(rel)) return false;
+	if (isGeneratedFile(rel)) return false;
 	if (ENTRYPOINT_FILES.has(rel)) return false;
 	if (basename(rel) === "index.ts") return false;
 	return /\.(ts|tsx)$/.test(rel);
+}
+
+function isGeneratedFile(rel: string) {
+	return /\.generated\.[cm]?[tj]sx?$/.test(rel);
 }
 
 function hasColocatedTest(filePath: string) {

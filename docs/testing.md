@@ -13,6 +13,7 @@ This repository uses a testing pyramid. Most behavior should be covered by fast 
 | `pnpm test:e2e` | `tests/e2e/*.spec.ts` | Yes | Browser-visible workflows, API/UI coordination, navigation, persistence, and failure states |
 | `pnpm test` | Unit, integration, and e2e | Yes | PR validation and full confidence before merging full-stack changes |
 | `pnpm test:watch` | Unit watch mode | No | Fast local feedback while editing source |
+| `pnpm api:check` | Generated OpenAPI spec and frontend client freshness | No | API route contract, request/response schema, or generated client changes |
 
 ## Stack Commands
 
@@ -78,6 +79,8 @@ pnpm lint
 pnpm test
 pnpm check:docs
 ```
+
+Run `pnpm api:generate` after changing HTTP route contracts or API payload schemas. `pnpm build` includes `pnpm api:check`, so stale generated OpenAPI/client artifacts fail validation.
 
 When a stack-backed run fails:
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { CreateItemSchema, ItemSchema } from "./item.js";
+import { CreateItemSchema, ItemResponseSchema, ItemSchema } from "./item.js";
 
 describe("ItemSchema", () => {
 	it("parses a valid item", () => {
@@ -43,5 +43,29 @@ describe("CreateItemSchema", () => {
 			status: "draft",
 		});
 		expect(result.success).toBe(true);
+	});
+});
+
+describe("ItemResponseSchema", () => {
+	it("uses JSON-serializable timestamp strings for API responses", () => {
+		const result = ItemResponseSchema.safeParse({
+			id: "550e8400-e29b-41d4-a716-446655440000",
+			name: "Test Item",
+			status: "active",
+			createdAt: "2026-05-05T12:00:00.000Z",
+			updatedAt: "2026-05-05T12:00:00.000Z",
+		});
+		expect(result.success).toBe(true);
+	});
+
+	it("rejects Date instances because HTTP JSON carries strings", () => {
+		const result = ItemResponseSchema.safeParse({
+			id: "550e8400-e29b-41d4-a716-446655440000",
+			name: "Test Item",
+			status: "active",
+			createdAt: new Date("2026-05-05T12:00:00.000Z"),
+			updatedAt: new Date("2026-05-05T12:00:00.000Z"),
+		});
+		expect(result.success).toBe(false);
 	});
 });

@@ -23,6 +23,7 @@ Track the health of each domain and architectural layer. Update this when you im
 | auth | D | Placeholder |
 | database | B | Postgres provider wired through Docker Compose stack |
 | telemetry | B | Pino logger, request IDs, route timings, and stack log files are wired; metrics/traces are future work |
+| openapi | B | Route contracts generate `openapi.generated.json` and a typed frontend client; broader coverage should grow as domains are added |
 | feature-flags | D | Placeholder |
 
 ## Known Gaps

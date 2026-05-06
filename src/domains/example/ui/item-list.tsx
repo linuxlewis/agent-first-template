@@ -10,7 +10,11 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import type { Item } from "../types/index.js";
+import {
+	ApiClientError,
+	apiClient,
+	type ItemResponse,
+} from "../../../generated/api-client.generated.js";
 
 const itemsQueryKey = ["items"] as const;
 
@@ -102,28 +106,20 @@ export function ItemList() {
 	);
 }
 
-async function fetchItems(): Promise<Item[]> {
-	const res = await fetch("/api/items");
-	if (!res.ok) throw new Error(`HTTP ${res.status}`);
-	return res.json();
+async function fetchItems(): Promise<ItemResponse[]> {
+	return apiClient.listItems();
 }
 
 async function createItemRequest(name: string) {
-	const res = await fetch("/api/items", {
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify({ name, status: "draft" }),
-	});
-	if (!res.ok) throw new Error(`HTTP ${res.status}`);
-	return res.json();
+	return apiClient.createItem({ name, status: "draft" });
 }
 
 async function deleteItemRequest(id: string) {
-	const res = await fetch(`/api/items/${id}`, { method: "DELETE" });
-	if (!res.ok) throw new Error(`HTTP ${res.status}`);
+	await apiClient.deleteItem({ id });
 }
 
 function getErrorMessage(error: unknown) {
 	if (!error) return null;
+	if (error instanceof ApiClientError) return `HTTP ${error.status}`;
 	return error instanceof Error ? error.message : "Request failed";
 }

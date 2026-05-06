@@ -12,6 +12,7 @@ pnpm start      # Start Docker Compose Postgres, API, and web for this worktree
 pnpm health     # Print health checks and the allocated URLs
 pnpm preview    # Build and run a pseudo-production stack
 pnpm test:unit  # Fast unit tests
+pnpm api:generate # Regenerate OpenAPI spec and typed frontend client
 pnpm test       # Unit, integration, and e2e tests
 pnpm lint       # Biome + architectural linting
 pnpm check:docs # Verify doc freshness
@@ -24,7 +25,7 @@ Use `pnpm logs -- --service api --lines 120` to inspect API logs. Use `pnpm seed
 
 See [docs/architecture.md](./docs/architecture.md) for the full picture.
 
-Each business domain follows a strict layered model. The React UI uses TanStack Query for server-state fetching, mutation, caching, and invalidation.
+Each business domain follows a strict layered model. The React UI uses TanStack Query for server-state fetching, mutation, caching, and invalidation. HTTP route contracts generate the OpenAPI spec and typed frontend client; see [docs/openapi.md](./docs/openapi.md).
 
 ```
 Types → Config → Repo → Service → Runtime → UI
@@ -47,7 +48,7 @@ When an agent needs the running app URL, use `pnpm health` or read `.stack/<work
 3. Update this README with the product name and local setup notes.
 4. Replace or rename the example domain under `src/domains/example/`.
 5. Add your first real domain by starting at the `types/` layer, then move forward through config, repo, service, runtime, and UI as needed.
-6. Keep [AGENTS.md](./AGENTS.md), [docs/implementation.md](./docs/implementation.md), [docs/testing.md](./docs/testing.md), and [docs/react.md](./docs/react.md) current as the project develops.
+6. Keep [AGENTS.md](./AGENTS.md), [docs/implementation.md](./docs/implementation.md), [docs/testing.md](./docs/testing.md), [docs/openapi.md](./docs/openapi.md), and [docs/react.md](./docs/react.md) current as the project develops.
 7. Run `pnpm lint`, `pnpm test`, `pnpm build`, and `pnpm check:docs` before treating the template migration as complete.
 
 ## For Agents

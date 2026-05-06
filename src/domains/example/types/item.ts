@@ -23,6 +23,17 @@ export const ItemIdSchema = z.string().uuid();
 
 export type Item = z.infer<typeof ItemSchema>;
 
+export const ItemResponseSchema = z.object({
+	id: ItemIdSchema,
+	name: z.string().min(1).max(255),
+	description: z.string().max(2000).optional(),
+	status: z.enum(["draft", "active", "archived"]),
+	createdAt: z.iso.datetime(),
+	updatedAt: z.iso.datetime(),
+});
+
+export type ItemResponse = z.infer<typeof ItemResponseSchema>;
+
 export const CreateItemSchema = ItemSchema.omit({
 	id: true,
 	createdAt: true,
