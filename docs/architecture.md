@@ -10,7 +10,8 @@ Types → Config → Repo → Service → Runtime → UI
    └── Zod request/response schemas ─────┘       │
                          │                       │
                          ▼                       │
-              OpenAPI spec + typed API client ───┘
+              OpenAPI spec + typed API client
+              + TanStack Query helpers ───────────┘
 ```
 
 ### Layer Responsibilities
@@ -22,9 +23,9 @@ Types → Config → Repo → Service → Runtime → UI
 | **repo/** | Data access, database queries, external API clients | types, config |
 | **service/** | Business logic, orchestration, domain rules | types, config, repo |
 | **runtime/** | Server routes, route contracts, background jobs, event handlers | types, config, repo, service |
-| **ui/** | React components, hooks, pages; uses generated API client for HTTP | types, config (client-safe only), generated client |
+| **ui/** | React components, hooks, pages; uses generated API client and TanStack Query helpers for HTTP | types, config (client-safe only), generated client |
 
-Route contracts live in `runtime/contract.ts` because they describe the HTTP boundary. They depend on lower-layer Zod schemas and provider contract types, then feed generated artifacts under `src/generated/`. UI code may import the generated client and exported client-safe types, but it must not import runtime route modules directly.
+Route contracts live in `runtime/contract.ts` because they describe the HTTP boundary. They depend on lower-layer Zod schemas and provider contract types, then feed generated artifacts under `src/generated/`. UI code may import the generated client, generated TanStack Query option factories, generated query keys, and exported client-safe types, but it must not import runtime route modules directly.
 
 ### Cross-Cutting Concerns (Providers)
 
@@ -47,7 +48,7 @@ These rules are enforced by the custom linter at `lints/check-deps.ts`:
 2. **No cross-domain imports at lower layers.** `domainA/repo` cannot import `domainB/repo`. Cross-domain communication happens at the `service` layer or above.
 3. **No direct cross-cutting imports.** Use `src/providers/`, not raw `pino` or `@opentelemetry/*` imports in domain code.
 4. **UI only imports types and client-safe config.** No server-side code in the UI layer.
-5. **Generated API client is the UI HTTP boundary.** Browser code should call `src/generated/api-client.generated.ts`, not hand-written `fetch` wrappers for app routes.
+5. **Generated API client is the UI HTTP boundary.** Browser code should use `src/generated/api-client.generated.ts`, preferably through generated TanStack Query helpers, not hand-written `fetch` wrappers for app routes.
 6. **Co-located tests are required.** Source modules must have adjacent unit or integration tests unless they are approved entrypoints, generated files, or barrel files.
 7. **Structured logging only.** Application code must not use `console.*`; use providers so stack logs stay queryable.
 

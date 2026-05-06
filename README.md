@@ -25,7 +25,7 @@ Use `pnpm logs -- --service api --lines 120` to inspect API logs. Use `pnpm seed
 
 See [docs/architecture.md](./docs/architecture.md) for the full picture.
 
-Each business domain follows a strict layered model. The React UI uses TanStack Query for server-state fetching, mutation, caching, and invalidation. HTTP route contracts generate the OpenAPI spec and typed frontend client; see [docs/openapi.md](./docs/openapi.md).
+Each business domain follows a strict layered model. The React UI uses TanStack Query for server-state fetching, mutation, caching, and invalidation. HTTP route contracts generate the OpenAPI spec, typed frontend client, and TanStack Query helper factories; see [docs/openapi.md](./docs/openapi.md).
 
 ```
 Types → Config → Repo → Service → Runtime → UI

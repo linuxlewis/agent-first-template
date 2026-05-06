@@ -12,33 +12,29 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import {
 	ApiClientError,
-	apiClient,
-	type ItemResponse,
+	apiMutations,
+	apiQueries,
+	apiQueryKeys,
 } from "../../../generated/api-client.generated.js";
-
-const itemsQueryKey = ["items"] as const;
 
 export function ItemList() {
 	const [newName, setNewName] = useState("");
 	const queryClient = useQueryClient();
 
-	const itemsQuery = useQuery({
-		queryKey: itemsQueryKey,
-		queryFn: fetchItems,
-	});
+	const itemsQuery = useQuery(apiQueries.listItems());
 
 	const createMutation = useMutation({
-		mutationFn: createItemRequest,
+		...apiMutations.createItem(),
 		onSuccess: async () => {
 			setNewName("");
-			await queryClient.invalidateQueries({ queryKey: itemsQueryKey });
+			await queryClient.invalidateQueries({ queryKey: apiQueryKeys.listItems() });
 		},
 	});
 
 	const deleteMutation = useMutation({
-		mutationFn: deleteItemRequest,
+		...apiMutations.deleteItem(),
 		onSuccess: async () => {
-			await queryClient.invalidateQueries({ queryKey: itemsQueryKey });
+			await queryClient.invalidateQueries({ queryKey: apiQueryKeys.listItems() });
 		},
 	});
 
@@ -46,7 +42,7 @@ export function ItemList() {
 
 	function createItem() {
 		if (!newName.trim()) return;
-		createMutation.mutate(newName);
+		createMutation.mutate({ name: newName, status: "draft" });
 	}
 
 	if (itemsQuery.isLoading) return <p>Loading...</p>;
@@ -93,7 +89,7 @@ export function ItemList() {
 							</span>
 							<button
 								type="button"
-								onClick={() => deleteMutation.mutate(item.id)}
+								onClick={() => deleteMutation.mutate({ id: item.id })}
 								style={{ color: "red", cursor: "pointer" }}
 							>
 								Delete
@@ -104,18 +100,6 @@ export function ItemList() {
 			)}
 		</div>
 	);
-}
-
-async function fetchItems(): Promise<ItemResponse[]> {
-	return apiClient.listItems();
-}
-
-async function createItemRequest(name: string) {
-	return apiClient.createItem({ name, status: "draft" });
-}
-
-async function deleteItemRequest(id: string) {
-	await apiClient.deleteItem({ id });
 }
 
 function getErrorMessage(error: unknown) {

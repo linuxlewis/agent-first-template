@@ -2,7 +2,7 @@
 
 Last verified: 2026-05-05
 
-The HTTP contract is generated from TypeScript route contract metadata and Zod schemas. Domain runtime layers own their route contracts because routes are the HTTP boundary, and the generated frontend client imports only client-safe domain types.
+The HTTP contract is generated from TypeScript route contract metadata and Zod schemas. Domain runtime layers own their route contracts because routes are the HTTP boundary, and the generated frontend client imports only client-safe domain types. The generated client also exposes TanStack Query option factories so UI code can share query keys, query functions, mutation keys, and mutation functions without hand-written wrappers.
 
 ## Files
 
@@ -12,7 +12,7 @@ The HTTP contract is generated from TypeScript route contract metadata and Zod s
 | App route contract registry | `src/api-contracts.ts` |
 | Example domain route contracts | `src/domains/example/runtime/contract.ts` |
 | Generated OpenAPI spec | `src/generated/openapi.generated.json` |
-| Generated frontend client | `src/generated/api-client.generated.ts` |
+| Generated frontend client and TanStack Query helpers | `src/generated/api-client.generated.ts` |
 
 ## Commands
 
@@ -29,7 +29,7 @@ The HTTP contract is generated from TypeScript route contract metadata and Zod s
 2. Add or update the route contract in the domain `runtime/contract.ts`.
 3. Implement the Fastify route in the domain `runtime/routes.ts`.
 4. Run `pnpm api:generate`.
-5. Use `src/generated/api-client.generated.ts` from UI code instead of hand-written `fetch` calls.
+5. Use `apiQueries`, `apiMutations`, and `apiQueryKeys` from `src/generated/api-client.generated.ts` in UI code instead of hand-written `fetch`, `queryKey`, `queryFn`, or `mutationFn` wrappers.
 
 ## Contract Shape
 
@@ -131,6 +131,56 @@ client: {
 
 For a `DELETE` route that returns `204`, omit `responseParser` and use `responseType: "void"`.
 
+## Generated TanStack Query Helpers
+
+The generator emits three TanStack-oriented surfaces:
+
+| Export | Purpose |
+|--------|---------|
+| `apiQueryKeys` | Stable query key factories for GET routes. Use these for invalidation and cache reads. |
+| `apiQueries` | `queryOptions(...)` factories for GET routes. Pass these directly to `useQuery`, `useSuspenseQuery`, `prefetchQuery`, or `useQueries`. |
+| `apiMutations` | `mutationOptions(...)` factories for non-GET routes. Pass or spread these into `useMutation`. |
+
+Use these helpers in UI code:
+
+```tsx
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+	apiMutations,
+	apiQueries,
+	apiQueryKeys,
+} from "../../../generated/api-client.generated.js";
+
+const itemsQuery = useQuery(apiQueries.listItems());
+
+const createMutation = useMutation({
+	...apiMutations.createItem(),
+	onSuccess: async () => {
+		await queryClient.invalidateQueries({ queryKey: apiQueryKeys.listItems() });
+	},
+});
+```
+
+GET routes generate `apiQueries.<functionName>()`. If the route has path params, the params become the first argument:
+
+```ts
+useQuery(apiQueries.getItem({ id }));
+```
+
+Non-GET routes generate `apiMutations.<functionName>()`. Mutation variables match the generated client method shape:
+
+- body-only routes use the body value as mutation variables
+- path-param-only routes use the params object as mutation variables
+- routes with both path params and body use `{ params, body }`
+- bodyless and paramless routes use no mutation variables
+
+```ts
+createMutation.mutate({ name: "New item", status: "draft" });
+deleteMutation.mutate({ id });
+```
+
+The generated helpers call the generated `apiClient`, so response parsing and `ApiClientError` behavior stay centralized.
+
 ## Schema Rules
 
 - Request schemas should describe the raw JSON sent by clients.
@@ -172,4 +222,4 @@ When changing contracts, verify all of the following:
 2. `runtime/routes.ts` has tests or integration coverage for boundary validation and status codes.
 3. `pnpm api:generate` updates both generated files.
 4. `pnpm api:check` passes without rewriting artifacts.
-5. UI code imports `apiClient` or generated exported types from `src/generated/api-client.generated.ts`.
+5. UI code imports `apiQueries`, `apiMutations`, `apiQueryKeys`, `apiClient`, or generated exported types from `src/generated/api-client.generated.ts`.
