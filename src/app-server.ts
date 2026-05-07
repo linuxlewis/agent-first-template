@@ -4,10 +4,15 @@ import { createLogger } from "@providers/telemetry/index.js";
 import Fastify from "fastify";
 import { apiRouteContracts } from "./api-contracts.js";
 import { registerItemRoutes } from "./domains/example/runtime/routes.js";
+import { registerStaticAssetFallback } from "./static-assets.js";
 
 const log = createLogger("app-server");
 
-export async function buildServer() {
+export interface BuildServerOptions {
+	staticRoot?: string;
+}
+
+export async function buildServer(options: BuildServerOptions = {}) {
 	const app = Fastify({
 		logger: false,
 		genReqId: () => crypto.randomUUID(),
@@ -40,6 +45,10 @@ export async function buildServer() {
 		}),
 	);
 	await registerItemRoutes(app);
+
+	if (options.staticRoot) {
+		registerStaticAssetFallback(app, options.staticRoot);
+	}
 
 	app.addHook("onClose", async () => {
 		await closeDb();

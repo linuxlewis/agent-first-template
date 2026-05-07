@@ -6,6 +6,7 @@ playwright-report/
 test-results/
 .env
 .env.local
+.env.production
 *.generated.*
 !src/generated/
 !src/generated/*.generated.*

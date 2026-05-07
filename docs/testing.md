@@ -14,6 +14,7 @@ This repository uses a testing pyramid. Most behavior should be covered by fast 
 | `pnpm test` | Unit, integration, and e2e | Yes | PR validation and full confidence before merging full-stack changes |
 | `pnpm test:watch` | Unit watch mode | No | Fast local feedback while editing source |
 | `pnpm api:check` | Generated OpenAPI spec and frontend client freshness | No | API route contract, request/response schema, or generated client changes |
+| `pnpm build:image` | Production Docker image build | No | Dockerfile, production build, production server, or Compose changes |
 
 ## Stack Commands
 
@@ -81,6 +82,8 @@ pnpm check:docs
 ```
 
 Run `pnpm api:generate` after changing HTTP route contracts or API payload schemas. `pnpm build` includes `pnpm api:check`, so stale generated OpenAPI/client artifacts fail validation.
+
+Run `pnpm build:image` after changing `Dockerfile`, `docker-compose.prod.yml`, production server startup, migrations, or runtime dependency shape. See [production.md](./production.md) for production Compose smoke checks.
 
 When a stack-backed run fails:
 

@@ -15,6 +15,7 @@ This is a TypeScript monorepo using pnpm workspaces. The application follows a d
 | Testing procedure | [docs/testing.md](./docs/testing.md) |
 | React conventions | [docs/react.md](./docs/react.md) |
 | OpenAPI and typed client generation | [docs/openapi.md](./docs/openapi.md) |
+| Production Docker Compose | [docs/production.md](./docs/production.md) |
 | Core beliefs & principles | [docs/beliefs.md](./docs/beliefs.md) |
 | Quality tracking | [docs/quality.md](./docs/quality.md) |
 
@@ -38,6 +39,8 @@ pnpm · TypeScript · Fastify + React/Vite · TanStack Query · PostgreSQL + Dri
 |---------|---------|
 | `pnpm start` | Start the local Docker Postgres, API, and web stack |
 | `pnpm preview` | Build the web app and run a pseudo-production stack |
+| `pnpm prod:up` | Build and start the production Docker Compose stack |
+| `pnpm prod:down` | Stop the production Docker Compose stack |
 | `pnpm stop` | Stop the local stack and Docker resources |
 | `pnpm api:generate` | Regenerate the OpenAPI spec and typed frontend client |
 | `pnpm api:check` | Verify generated API artifacts are current |

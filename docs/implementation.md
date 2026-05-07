@@ -73,6 +73,16 @@ pnpm test
 pnpm check:docs
 ```
 
+For Docker, production startup, or image changes:
+
+```bash
+pnpm lint
+pnpm test:unit
+pnpm build
+pnpm build:image
+pnpm check:docs
+```
+
 Use `pnpm start`, `pnpm seed`, `pnpm health`, `pnpm logs`, and `pnpm stop` when you need to inspect the running stack manually. Use `pnpm preview` for a built pseudo-production smoke check.
 
 ## 6. Update Documentation
@@ -80,6 +90,7 @@ Use `pnpm start`, `pnpm seed`, `pnpm health`, `pnpm logs`, and `pnpm stop` when 
 - Update [testing.md](./testing.md) when commands or test expectations change.
 - Update [react.md](./react.md) when UI patterns or component rules change.
 - Update [openapi.md](./openapi.md) when API contract generation or generated client conventions change.
+- Update [production.md](./production.md) when production image, Compose, runtime, or deployment commands change.
 - Update [quality.md](./quality.md) when you improve coverage or identify a durable gap.
 - Update [architecture.md](./architecture.md) only when the layer model or dependency rules change.
 - Add a focused design note only for decisions that future agents must understand to modify the feature safely.

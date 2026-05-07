@@ -27,7 +27,13 @@ const BANNED_DIRECT_IMPORTS = [
 	"@opentelemetry", // Use @providers/telemetry
 ];
 
-const ENTRYPOINT_FILES = new Set(["src/server.ts", "src/app/main.tsx", "src/app/vite.config.ts"]);
+const ENTRYPOINT_FILES = new Set([
+	"src/server.ts",
+	"src/prod-server.ts",
+	"src/app/main.tsx",
+	"src/app/vite.config.ts",
+	"src/server.vite.config.ts",
+]);
 
 interface Violation {
 	file: string;

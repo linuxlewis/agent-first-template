@@ -24,12 +24,13 @@ Track the health of each domain and architectural layer. Update this when you im
 | database | B | Postgres provider wired through Docker Compose stack |
 | telemetry | B | Pino logger, request IDs, route timings, and stack log files are wired; metrics/traces are future work |
 | openapi | B | Route contracts generate `openapi.generated.json` and a typed frontend client; broader coverage should grow as domains are added |
+| production | B | Node 24 multi-stage Docker image and production Compose stack are documented; deployment hardening remains environment-specific |
 | feature-flags | D | Placeholder |
 
 ## Known Gaps
 
 - [ ] Telemetry does not yet include a metrics/traces backend beyond structured logs and Playwright traces
-- [ ] No production deployment config
+- [ ] No production metrics/traces backend
 
 ---
 

@@ -1,0 +1,12 @@
+node_modules
+dist
+.git
+.stack
+plans
+playwright-report
+test-results
+.env
+.env.local
+.env.production
+Dockerfile
+docker-compose*.yml

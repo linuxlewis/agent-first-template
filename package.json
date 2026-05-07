@@ -4,9 +4,13 @@
 	"type": "module",
 	"scripts": {
 		"dev": "pnpm start",
-		"build": "pnpm api:check && tsc --noEmit && vite build --config src/app/vite.config.ts",
+		"build": "pnpm api:check && tsc --noEmit && vite build --config src/app/vite.config.ts && vite build --config src/server.vite.config.ts",
+		"build:image": "docker build -t agent-first-template:production .",
 		"start": "tsx scripts/stack-start.ts",
 		"preview": "tsx scripts/stack-preview.ts",
+		"prod:up": "docker compose --env-file .env.production -f docker-compose.prod.yml up -d --build",
+		"prod:down": "docker compose --env-file .env.production -f docker-compose.prod.yml down",
+		"prod:logs": "docker compose --env-file .env.production -f docker-compose.prod.yml logs -f app",
 		"stop": "tsx scripts/stack-stop.ts",
 		"health": "tsx scripts/stack-health.ts",
 		"logs": "tsx scripts/stack-logs.ts",
@@ -35,14 +39,13 @@
 		"@types/react-dom": "^19.2.3",
 		"@vitejs/plugin-react": "^6.0.1",
 		"drizzle-kit": "^0.31.10",
-		"drizzle-orm": "^0.45.2",
 		"tsx": "^4.21.0",
 		"typescript": "^6.0.3",
 		"vite": "^8.0.10",
 		"vitest": "^4.1.5"
 	},
 	"engines": {
-		"node": ">=22"
+		"node": ">=24"
 	},
 	"packageManager": "pnpm@10.33.3",
 	"pnpm": {
@@ -52,6 +55,7 @@
 	},
 	"dependencies": {
 		"@tanstack/react-query": "^5.100.9",
+		"drizzle-orm": "^0.45.2",
 		"fastify": "^5.8.5",
 		"pino": "^10.3.1",
 		"postgres": "^3.4.9",
