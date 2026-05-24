@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+	<title id="title">Agent-First Template</title>
+	<desc id="desc">A geometric app icon for the Agent-First Template.</desc>
+	<rect width="512" height="512" rx="112" fill="#111827" />
+	<path d="M256 96 400 352H112L256 96Z" fill="#38bdf8" />
+	<path d="M256 184 335 324H177L256 184Z" fill="#f8fafc" />
+	<circle cx="256" cy="324" r="42" fill="#22c55e" />
+</svg>

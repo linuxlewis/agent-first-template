@@ -49,4 +49,25 @@ describe("registerStaticAssetFallback", () => {
 			await app.close();
 		}
 	});
+
+	it("serves PWA assets with browser-expected content types", async () => {
+		tempDir = await mkdtemp(join(tmpdir(), "static-assets-"));
+		await writeFile(join(tempDir, "index.html"), "<main>app</main>");
+		await writeFile(join(tempDir, "manifest.webmanifest"), "{}");
+		await writeFile(join(tempDir, "robots.txt"), "User-agent: *\nAllow: /\n");
+
+		const app = Fastify();
+		registerStaticAssetFallback(app, tempDir);
+		try {
+			const manifest = await app.inject({ method: "GET", url: "/manifest.webmanifest" });
+			expect(manifest.statusCode).toBe(200);
+			expect(manifest.headers["content-type"]).toContain("application/manifest+json");
+
+			const robots = await app.inject({ method: "GET", url: "/robots.txt" });
+			expect(robots.statusCode).toBe(200);
+			expect(robots.headers["content-type"]).toContain("text/plain");
+		} finally {
+			await app.close();
+		}
+	});
 });

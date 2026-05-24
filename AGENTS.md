@@ -15,6 +15,7 @@ This is a TypeScript monorepo using pnpm workspaces. The application follows a d
 | Testing procedure | [docs/testing.md](./docs/testing.md) |
 | React conventions | [docs/react.md](./docs/react.md) |
 | OpenAPI and typed client generation | [docs/openapi.md](./docs/openapi.md) |
+| Progressive web app setup | [docs/pwa.md](./docs/pwa.md) |
 | Production Docker Compose | [docs/production.md](./docs/production.md) |
 | Core beliefs & principles | [docs/beliefs.md](./docs/beliefs.md) |
 | Quality tracking | [docs/quality.md](./docs/quality.md) |
